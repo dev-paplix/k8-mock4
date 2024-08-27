@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: qq6        
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        volumeMounts:
+        - name: storage
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpd
+  namespace: qq6
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: httpd
+  template:
+    metadata:
+      labels:
+        app: httpd
+    spec:
+      containers:
+      - name: httpd
+        image: httpd:latest
+        volumeMounts:
+        - name: storage
+          mountPath: /usr/local/apache2/htdocs
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: qq6
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:12.20-bullseye
+        env:
+        - name: POSTGRES_DB
+          value: mydatabase
+        - name: POSTGRES_USER
+          value: myuser
+        - name: POSTGRES_PASSWORD
+          value: mypassword
+        volumeMounts:
+        - name: shared-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: pvc

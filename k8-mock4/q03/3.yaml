@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongostatefulset
+  namespace: qq3
+spec:
+  serviceName: "mongo"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - name: mongo
+        image: mongo:latest
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_INITDB_ROOT_USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_INITDB_ROOT_PASSWORD
+        ports:
+        - containerPort: 27017
+          name: mongo
+        volumeMounts:
+        - mountPath: /etc/mongo
+          name: mongo-storage
+      - name: mongo-express
+        image: mongo-express:latest
+        env:
+        - name: ME_CONFIG_MONGODB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: mongoconfig
+              key: ME_CONFIG_MONGODB_URL
+        - name: ME_CONFIG_BASICAUTH
+          valueFrom:
+            configMapKeyRef:
+              name: mongoconfig
+              key: ME_CONFIG_BASICAUTH
+        - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: ME_CONFIG_MONGODB_ADMINUSERNAME
+        - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: ME_CONFIG_MONGODB_ADMINPASSWORD
+        ports:
+        - containerPort: 8081
+          name: mongo-express
+        volumeMounts:
+        - mountPath: /etc/mongo
+          name: mongo-storage
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: 
+      resources:
+        requests:
+          storage: 3Gi
