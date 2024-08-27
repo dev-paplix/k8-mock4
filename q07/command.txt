@@ -1,0 +1,2 @@
+kubectl create ns qq2
+kubectl apply -f q07/7.yaml -n qq2
