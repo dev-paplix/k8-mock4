@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-volume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  storageClassName: pv
+  hostPath:
+    path: /tmp/
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-volume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: pv
+  volumeName: pv-volume
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: three-deployment
+  labels:
+    app: deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: deploy
+  template:
+    metadata:
+      labels:
+        app: deploy
+    spec:
+      volumes:
+      - name: volume-share
+        persistentVolumeClaim:
+          claimName: pvc-volume
+      containers:
+      - name: nginx
+        image: nginx:latest
+        volumeMounts: 
+        - mountPath: /var/www/html
+          name: volume-share
+        ports:
+        - containerPort: 80
+      - name: httpd
+        image: httpd:latest
+        volumeMounts:
+        - mountPath: /usr/local/apache2/htdocs 
+          name: volume-share
+        ports:
+        - containerPort: 8080
+      - name: postgres
+        image: postgres:12.20-bullseye
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: volume-share
+        ports:
+        - containerPort: 3000

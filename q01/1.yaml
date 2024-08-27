@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      name: nginx
+  template:
+    metadata:
+        name: nginx
+    spec:
+      tolerations:
+      - key: key1
+        value: value1
+        operator: Equal
+        effect: NoSchedule
+      containers:
+      - name: nginx
+        image: nginx:latest
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
