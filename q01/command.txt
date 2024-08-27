@@ -1,0 +1,1 @@
+kubectl taint node01 key1=value1:NoSchedule --dry-run=client -o yaml
