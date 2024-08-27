@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: qq6
+spec:
+  selector:
+    matchLabels:
+      run: redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "500M"
+              cpu: "500m"
+            limits:
+              memory: "500M"
+              cpu: "500m"
