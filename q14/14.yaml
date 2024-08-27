@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: qq8
+  creationTimestamp: null
+  labels:
+    app: http
+  name: http
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: http
+    spec:
+      containers:
+      - image: traefik/whoami
+        name: whoami
+        resources: {}
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-service
+  namespace: qq8
+spec:
+  type: LoadBalancer
+  selector:
+    app: http
+  ports:
+    - port: 8080
+      targetPort: 8080

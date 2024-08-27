@@ -1,10 +1,10 @@
 Name:
 
-Q1:
+Q1: /
 
 Taint your worker node to key1=value1 with NoSchedule. Create DaemonSet from Nginx Image in qq1 namespace and tolerate it to the worker node.
 
-Q2:
+Q2: /
 
 Create a StatefulSet named database in qq3 namespace. use two images in the same StatefulSet one is mongo and another is mongo-express. The following mongo-express enviromental variables should come from configset:
 
@@ -21,7 +21,7 @@ You should use the same secret for the following variables for mongo-express:
       ME_CONFIG_MONGODB_ADMINUSERNAME: 
       ME_CONFIG_MONGODB_ADMINPASSWORD: 
 
-Q3:
+Q3: 
 
 Create a new storageset with 5Gi and claim 3Gi of it by the database StatefulSet you created in the last question. Also this shoud have a mountPath of /etc/mongo
 
@@ -55,7 +55,7 @@ Q9:
 Create a new deployment names frontend and deploy it on qq4 namespace with 4 replicas. You should use httpd:latest image. Update the image to httpd:bookworm and create a backup in etcd then rollout it back again to httpd:latest. Use the etcd backup to return it to httpd:bookworm.
 
 
-Q10:
+Q10: /
 
 Create a new deployment and service names dashboard in qq5 namespace. Use the following image to deploy it:
 
@@ -64,7 +64,7 @@ drupal:10.2.7-php8.2-fpm-bookworm
 The deplyment should be accessible to the public via dashboard.qq5.org
 
 
-Q11:
+Q11: /
 
 Create a new deployment in qq6 namespace names realtime with redis:latest image. Asign resources of CPU: 0.5 Memory: 500M for both limit and request  
 
@@ -75,11 +75,11 @@ Create a persistent volume which has 10Gi, claim it by 3 deployments nginx:lates
 
 
 
-Q13:
+Q13: /
 
 Make a deployment of an image hashicorp/terraform in qq7 namespace with no environmental variable. Let the manager know the reason of the deployment failure 
 
-Q14:
+Q14: /
 
 Create a deployment names http in the nameserver of qq8 with an image of traefik/whoami. The resource must be available from anywhere with port 8080
 
@@ -97,7 +97,7 @@ Minimum Pods: 2
 Maximum Pods: 5
 
 
-Q16:
+Q16: /
 
 Create a new pod names alpine with an image of alpine:edge in qq9 namespace. use the add the following command to the pod:
 
@@ -105,7 +105,7 @@ Create a new pod names alpine with an image of alpine:edge in qq9 namespace. use
 
 Take a screenshot of the pod echoing 'Hello Alpine'
 
-Q17:
+Q17: /
 
 Create a deployment with 2 replicas from nginx:latest image in qq10 namespace. Make it available globally in whatever port randomly chosen. 
 

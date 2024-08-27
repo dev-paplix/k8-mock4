@@ -1,0 +1,1 @@
+k scale --replicas=5 -f statefulmongo.yaml
