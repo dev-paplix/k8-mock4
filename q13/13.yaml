@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hashicorp-deployment
+  labels:
+    app: nginx
+  namespace: qq7
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hashicorp 
+  template:
+    metadata:
+      labels:
+        app: hashicorp 
+    spec:
+      containers:
+      - name: hashicorp
+        image: hashicorp/terraform
+        ports:
+        - containerPort: 80

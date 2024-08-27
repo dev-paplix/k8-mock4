@@ -1,0 +1,13 @@
+kind: StorageClass
+metadata:
+  name: sc-mongo 
+provisioner: kubernetes.io/example
+parameters:
+  type: pd-standard
+volumeBindingMode: WaitForFirstConsumer
+allowedTopologies:
+- matchLabelExpressions:
+  - key: topology.kubernetes.io/zone
+    values:
+    - us-central-1a
+    - us-central-1b
