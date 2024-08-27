@@ -1,4 +1,4 @@
-Name:
+Name: Mohamad Syahrin Bin Suhaimi
 
 Q1:
 
