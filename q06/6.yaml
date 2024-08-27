@@ -1,0 +1,2 @@
+mkdir .kube
+scp -o "ForwardAgent yes" controlplane:.kube/config .kube/config

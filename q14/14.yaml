@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http
+  namespace: qq8
+  labels:
+    app: http
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http
+  template:
+    metadata:
+      labels:
+        app: http
+    spec:
+      containers:
+      - name: whoami
+        image: traefik/whoami
+        ports:
+        - containerPort: 80
+          name: http
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-service
+  namespace: qq8
+spec:
+  selector:
+    app: http
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: http
+  type: NodePort

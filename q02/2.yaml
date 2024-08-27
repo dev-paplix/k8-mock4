@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongo-secret
+data:
+  MONGO_INITDB_ROOT_USERNAME: YWRtaW4=
+  MONGO_INITDB_ROOT_PASSWORD: YWRtaW4=
+  ME_CONFIG_MONGODB_ADMINUSERNAME: YWRtaW4=
+  ME_CONFIG_MONGODB_ADMINPASSWORD: YWRtaW4=
+
+#alladmin
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-config
+data:
+  # property-like keys; each key maps to a simple value
+  ME_CONFIG_MONGODB_URL: "mongodb://root:example@mongo:27017/"
+  ME_CONFIG_BASICAUTH: "false"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  labels:
+    app: mongo
+spec:
+  ports:
+  - port: 80
+    name: mongo
+  clusterIP: None
+  selector:
+    app: mongo
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+spec:
+  selector:
+    matchLabels:
+      app: mongo # has to match .spec.template.metadata.labels
+  serviceName: "mongo"
+  replicas: 1 # by default is 1
+  minReadySeconds: 10 # by default is 0
+  template:
+    metadata:
+      labels:
+        app: mongo # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: mongo
+        image: mongo:latest
+        env:
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: MONGO_INITDB_ROOT_PASSWORD
+
+      - name: mongo-express
+        image: mongo-express:latest
+        env:
+          - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: ME_CONFIG_MONGODB_ADMINUSERNAME
+          - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: ME_CONFIG_MONGODB_ADMINPASSWORD
+          - name: ME_CONFIG_MONGODB_URL          
+            valueFrom:
+              configMapKeyRef:
+                name: mongo-config
+                key: ME_CONFIG_MONGODB_URL          
+          - name: ME_CONFIG_BASICAUTH
+            valueFrom:
+              configMapKeyRef:
+                name: mongo-config
+                key: ME_CONFIG_BASICAUTH   
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "my-storage-class"
+      resources:
+        requests:
+          storage: 1Gi
