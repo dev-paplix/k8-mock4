@@ -1,0 +1,13 @@
+mkdir .kube # create the .kube directory
+scp -o "ForwardAgent yes" controlplane:.kube/config .kube/config # secure copy (scp) the
+kubeconfig file
+
+To Check for admin access:
+kubectl auth can-i list nodes -A
+
+kubectl get clusterrole cluster-admin -o yaml
+
+grep "client-cert" ~/.kube/config | sed &#39;s/\(.*client-certificate-data: \)\(.*\)/\2/&#39; | base64 --decode
+&gt; cert.pem
+
+openssl x509 -in cert.pem -text -noot
