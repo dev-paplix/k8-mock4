@@ -1,4 +1,4 @@
-Name:
+Name: Muhamad Firdaus Jamaludin
 
 Q1:
 
