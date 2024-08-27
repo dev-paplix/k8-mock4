@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: database
+spec:
+  selector:
+    matchLabels:
+      app: database
+  replicas: 3
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: mongo
+        image: mongo:latest
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: secret
+                key: user
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secret
+                key: password
+        ports:
+        - containerPort: 27017
+          name: mongo
+        volumeMounts:
+        - name: mongo-storage
+          mountPath: /data/db  # MongoDB default data directory
+
+      - name: mongo-express
+        image: mongo-express:latest
+        env:
+          - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+            valueFrom:
+              secretKeyRef:
+                name: secret
+                key: user
+          - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secret
+                key: password
+          - name: ME_CONFIG_MONGODB_URL
+            valueFrom:
+              configMapKeyRef:
+                name: configset
+                key: ME_CONFIG_MONGODB_URL
+          - name: ME_CONFIG_BASICAUTH
+            valueFrom:
+              configMapKeyRef:
+                name: configset
+                key: ME_CONFIG_BASICAUTH
+        ports:
+        - containerPort: 8081
+          name: mongo-express
+        volumeMounts:
+        - name: mongo-storage
+          mountPath: /data  # Example path, adjust based on mongo-express needs
+
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 3Gi

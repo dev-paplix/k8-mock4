@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: database
+spec:
+  selector:
+    matchLabels:
+      app: database # has to match .spec.template.metadata.labels
+  replicas: 3 # by default is 1
+  minReadySeconds: 10 # by default is 0
+  template:
+    metadata:
+      labels:
+        app: database # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: mongo
+        image: mongo:latest
+        env:
+          # Define the environment variable
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                # The ConfigMap containing the value you want to assign to SPECIAL_LEVEL_KEY
+                name: secret
+              # Specify the key associated with the value
+                key: user
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                # The ConfigMap containing the value you want to assign to SPECIAL_LEVEL_KEY
+                name: secret
+              # Specify the key associated with the value
+                key: password
+        ports:
+        - containerPort: 27017
+          name: mongo
+      - name: mongo-express
+        image: mongo-express:latest
+        env:
+        # Define the environment variabl
+          - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+            valueFrom:
+              secretKeyRef:
+                  # The ConfigMap containing the value you want to assign to SPECIAL_LEVEL_KEY
+                name: secret
+               # Specify the key associated with the value
+                key: user
+          - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+            valueFrom:
+              secretKeyRef:
+                  # The ConfigMap containing the value you want to assign to SPECIAL_LEVEL_KEY
+                name: secret
+                # Specify the key associated with the value
+                key: password
+          - name: ME_CONFIG_MONGODB_URL
+            valueFrom:
+              configMapKeyRef:
+                  # The ConfigMap containing the value you want to assign to SPECIAL_LEVEL_KEY
+                name: configset
+                # Specify the key associated with the value
+                key: ME_CONFIG_MONGODB_URL
+          - name: ME_CONFIG_BASICAUTH
+            valueFrom:
+              configMapKeyRef:
+                  # The ConfigMap containing the value you want to assign to SPECIAL_LEVEL_KEY
+                name: configset
+                # Specify the key associated with the value
+                key: ME_CONFIG_BASICAUTH
+        ports:
+        - containerPort: 8081
+          name: mongo-express
