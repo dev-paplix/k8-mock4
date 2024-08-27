@@ -1,4 +1,4 @@
-Name:
+Name: IMan Muqri
 
 Q1: /
 
@@ -45,7 +45,7 @@ label your worker node to team=devops and create a deployment with an nginx imag
 
 
 
-Q8:
+Q8: /
 
 Create a new role names examinee and bind it to entire cluster.
 
@@ -53,7 +53,6 @@ Create a new role names examinee and bind it to entire cluster.
 Q9:
 
 Create a new deployment names frontend and deploy it on qq4 namespace with 4 replicas. You should use httpd:latest image. Update the image to httpd:bookworm and create a backup in etcd then rollout it back again to httpd:latest. Use the etcd backup to return it to httpd:bookworm.
-
 
 Q10: /
 
